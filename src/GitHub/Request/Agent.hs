@@ -12,6 +12,7 @@ module GitHub.Request.Agent
 import Data.ByteString.Char8         (pack)
 import Data.Time.Clock               (diffUTCTime)
 import Data.Time.Clock.POSIX         (getCurrentTime)
+import Data.Time.LocalTime           (getCurrentTimeZone, utcToLocalTime)
 import GitHub                        (Auth (OAuth))
 import GitHub.Data.Definitions       (Error (HTTPError))
 import GitHub.Data.Request           (RW (RO), Request)
@@ -36,9 +37,12 @@ run' req = executeRequest' req >>= processResponce (run' req)
 processResponce :: IO (Maybe a) -> Either Error a -> IO (Maybe a)
 processResponce retry = \case
   Left (HTTPError (HttpExceptionRequest _ (StatusCodeException err _))) -> do
-    sleepTime <- truncate . diffUTCTime (pickRateLimitReset err) <$> getCurrentTime
-    putStrLn $ "Caught API Limit, and wait " ++ show sleepTime ++ "s"
-    sleeps sleepTime
+    let reset = pickRateLimitReset err
+    waits <- truncate . diffUTCTime reset <$> getCurrentTime
+    putStrLn $ "Caught API Limit, and wait " ++ show waits ++ "s"
+    tz <- getCurrentTimeZone
+    putStrLn $ "Reset: " ++ show (utcToLocalTime tz reset)
+    sleeps waits
     retry
   Left err -> do
     putStrLn "Uncaught API Error, error json: "
