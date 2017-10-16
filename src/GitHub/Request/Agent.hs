@@ -43,6 +43,7 @@ processResponce retry = \case
     tz <- getCurrentTimeZone
     putStrLn $ "Reset: " ++ show (utcToLocalTime tz reset)
     sleeps waits
+    sleeps 10 -- additional waiting to prevent too many connection queries
     retry
   Left err -> do
     putStrLn "Uncaught API Error, error json: "
