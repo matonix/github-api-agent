@@ -1,1 +1,1 @@
-# github-api-agents
+# github-api-agent
