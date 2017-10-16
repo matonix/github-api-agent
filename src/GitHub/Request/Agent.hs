@@ -9,17 +9,17 @@ module GitHub.Request.Agent
   , getAuth
   ) where
 
-import           Data.ByteString.Char8         (pack)
-import           Data.Time.Clock               (diffUTCTime)
-import           Data.Time.Clock.POSIX         (getCurrentTime)
-import           GitHub                        (Auth (OAuth))
-import           GitHub.Data.Definitions       (Error (HTTPError))
-import           GitHub.Data.Request           (RW (RO), Request)
-import           GitHub.Request                (executeRequest, executeRequest')
-import           Network.HTTP.Client           hiding (Request)
-import           System.Environment            (lookupEnv)
+import Data.ByteString.Char8         (pack)
+import Data.Time.Clock               (diffUTCTime)
+import Data.Time.Clock.POSIX         (getCurrentTime)
+import GitHub                        (Auth (OAuth))
+import GitHub.Data.Definitions       (Error (HTTPError))
+import GitHub.Data.Request           (RW (RO), Request)
+import GitHub.Request                (executeRequest, executeRequest')
+import Network.HTTP.Client           hiding (Request)
+import System.Environment            (lookupEnv)
 
-import           GitHub.Request.Agent.Internal
+import GitHub.Request.Agent.Internal
 
 runs :: Auth -> [Request 'RO a] -> IO ()
 runs = mapM_ . run
