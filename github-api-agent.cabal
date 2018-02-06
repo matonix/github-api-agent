@@ -1,50 +1,66 @@
-name:                github-api-agent
-version:             0.1.0.0
--- synopsis:
--- description:
-homepage:            https://github.com/matonix/github-api-agent#readme
-license:             BSD3
-license-file:        LICENSE
-author:              maton
-maintainer:          automatonix@gmail.com
-copyright:           2017 maton
-category:            Web
-build-type:          Simple
-extra-source-files:  README.md
-cabal-version:       >=1.10
+-- This file has been generated from package.yaml by hpack version 0.20.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 9ce4d436c05a68bd6eec919ebb61cb01359ba7db1d99fdeded6c40077f81a12f
 
-library
-  hs-source-dirs:      src
-  exposed-modules:     GitHub.Request.Agent
-                     , GitHub.Request.Agent.Internal
-  build-depends:       base >= 4.7 && < 5
-                     , github
-                     , http-client
-                     , unordered-containers
-                     , time
-                     , bytestring
-                     , case-insensitive
-  default-language:    Haskell2010
-
-executable github-api-agent
-  hs-source-dirs:      app
-  main-is:             Main.hs
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall
-  build-depends:       base
-                     , github-api-agent
-                     , github
-                     , bytestring
-  default-language:    Haskell2010
-
-test-suite github-api-agent-test
-  type:                exitcode-stdio-1.0
-  hs-source-dirs:      test
-  main-is:             Spec.hs
-  build-depends:       base
-                     , github-api-agent
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
-  default-language:    Haskell2010
+name:           github-api-agent
+version:        0.1.0.0
+category:       Web
+homepage:       https://github.com/matonix/github-api-agent#readme
+bug-reports:    https://github.com/matonix/github-api-agent/issues
+author:         maton
+maintainer:     automatonix@gmail.com
+copyright:      2017 maton
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+cabal-version:  >= 1.10
 
 source-repository head
-  type:     git
+  type: git
   location: https://github.com/matonix/github-api-agent
+
+library
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , bytestring
+    , case-insensitive
+    , github
+    , http-client
+    , time
+    , unordered-containers
+  exposed-modules:
+      GitHub.Request.Agent
+      GitHub.Request.Agent.Internal
+  other-modules:
+      Paths_github_api_agent
+  default-language: Haskell2010
+
+executable github-api-agent
+  main-is: Main.hs
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall
+  build-depends:
+      base
+    , bytestring
+    , github
+    , github-api-agent
+  other-modules:
+      Paths_github_api_agent
+  default-language: Haskell2010
+
+test-suite github-api-agent-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  hs-source-dirs:
+      test
+  build-depends:
+      base
+    , github-api-agent
+  other-modules:
+      Paths_github_api_agent
+  default-language: Haskell2010
