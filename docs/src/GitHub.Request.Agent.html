@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE DataKinds  #-}</span><span>
+</span><a name="line-2"></a><span class="hs-pragma">{-# LANGUAGE LambdaCase #-}</span><span>
+</span><a name="line-3"></a><span>
+</span><a name="line-4"></a><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">GitHub</span><span class="hs-operator">.</span><span class="hs-identifier">Request</span><span class="hs-operator">.</span><span class="hs-identifier">Agent</span><span>
+</span><a name="line-5"></a><span>  </span><span class="hs-special">(</span><span> </span><a href="GitHub.Request.Agent.html#runs"><span class="hs-identifier hs-var">runs</span></a><span>
+</span><a name="line-6"></a><span>  </span><span class="hs-special">,</span><span> </span><a href="GitHub.Request.Agent.html#runs%27"><span class="hs-identifier hs-var">runs'</span></a><span>
+</span><a name="line-7"></a><span>  </span><span class="hs-special">,</span><span> </span><a href="GitHub.Request.Agent.html#run"><span class="hs-identifier hs-var">run</span></a><span>
+</span><a name="line-8"></a><span>  </span><span class="hs-special">,</span><span> </span><a href="GitHub.Request.Agent.html#run%27"><span class="hs-identifier hs-var">run'</span></a><span>
+</span><a name="line-9"></a><span>  </span><span class="hs-special">,</span><span> </span><a href="GitHub.Request.Agent.html#getAuth"><span class="hs-identifier hs-var">getAuth</span></a><span>
+</span><a name="line-10"></a><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><a name="line-11"></a><span>
+</span><a name="line-12"></a><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Data</span><span class="hs-operator">.</span><span class="hs-identifier">ByteString</span><span class="hs-operator">.</span><span class="hs-identifier">Char8</span><span>         </span><span class="hs-special">(</span><span class="hs-identifier hs-var">pack</span><span class="hs-special">)</span><span>
+</span><a name="line-13"></a><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Data</span><span class="hs-operator">.</span><span class="hs-identifier">Time</span><span class="hs-operator">.</span><span class="hs-identifier">Clock</span><span>               </span><span class="hs-special">(</span><span class="hs-identifier hs-var">diffUTCTime</span><span class="hs-special">)</span><span>
+</span><a name="line-14"></a><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Data</span><span class="hs-operator">.</span><span class="hs-identifier">Time</span><span class="hs-operator">.</span><span class="hs-identifier">Clock</span><span class="hs-operator">.</span><span class="hs-identifier">POSIX</span><span>         </span><span class="hs-special">(</span><span class="hs-identifier hs-var">getCurrentTime</span><span class="hs-special">)</span><span>
+</span><a name="line-15"></a><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Data</span><span class="hs-operator">.</span><span class="hs-identifier">Time</span><span class="hs-operator">.</span><span class="hs-identifier">LocalTime</span><span>           </span><span class="hs-special">(</span><span class="hs-identifier hs-var">getCurrentTimeZone</span><span class="hs-special">,</span><span> </span><span class="hs-identifier hs-var">utcToLocalTime</span><span class="hs-special">)</span><span>
+</span><a name="line-16"></a><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">GitHub</span><span>                        </span><span class="hs-special">(</span><span class="hs-identifier hs-type">Auth</span><span> </span><span class="hs-special">(</span><span class="hs-identifier hs-var">OAuth</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a name="line-17"></a><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">GitHub</span><span class="hs-operator">.</span><span class="hs-identifier">Data</span><span class="hs-operator">.</span><span class="hs-identifier">Definitions</span><span>       </span><span class="hs-special">(</span><span class="hs-identifier hs-type">Error</span><span> </span><span class="hs-special">(</span><span class="hs-identifier hs-var">HTTPError</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a name="line-18"></a><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">GitHub</span><span class="hs-operator">.</span><span class="hs-identifier">Data</span><span class="hs-operator">.</span><span class="hs-identifier">Request</span><span>           </span><span class="hs-special">(</span><span class="hs-identifier hs-type">RW</span><span> </span><span class="hs-special">(</span><span class="hs-identifier hs-var">RO</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="hs-identifier hs-type">Request</span><span class="hs-special">)</span><span>
+</span><a name="line-19"></a><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">GitHub</span><span class="hs-operator">.</span><span class="hs-identifier">Request</span><span>                </span><span class="hs-special">(</span><span class="hs-identifier hs-var">executeRequest</span><span class="hs-special">,</span><span> </span><span class="hs-identifier hs-var">executeRequest'</span><span class="hs-special">)</span><span>
+</span><a name="line-20"></a><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Network</span><span class="hs-operator">.</span><span class="hs-identifier">HTTP</span><span class="hs-operator">.</span><span class="hs-identifier">Client</span><span>           </span><span class="hs-keyword">hiding</span><span> </span><span class="hs-special">(</span><span class="hs-identifier hs-type">Request</span><span class="hs-special">)</span><span>
+</span><a name="line-21"></a><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">System</span><span class="hs-operator">.</span><span class="hs-identifier">Environment</span><span>            </span><span class="hs-special">(</span><span class="hs-identifier hs-var">lookupEnv</span><span class="hs-special">)</span><span>
+</span><a name="line-22"></a><span>
+</span><a name="line-23"></a><span class="hs-keyword">import</span><span> </span><a href="GitHub.Request.Agent.Internal.html"><span class="hs-identifier">GitHub</span><span class="hs-operator">.</span><span class="hs-identifier">Request</span><span class="hs-operator">.</span><span class="hs-identifier">Agent</span><span class="hs-operator">.</span><span class="hs-identifier">Internal</span></a><span>
+</span><a name="line-24"></a><span>
+</span><a name="line-25"></a><span class="hs-identifier">runs</span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-identifier hs-type">Auth</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-identifier hs-type">Request</span><span> </span><span class="hs-char">'RO a] -&gt; IO ()
+runs = mapM_ . run
+
+runs' :: [Request 'RO a] -&gt; IO ()
+runs' = mapM_ run'
+
+run :: Auth -&gt; Request k a -&gt; IO (Maybe a)
+run auth req = executeRequest auth req &gt;&gt;= processResponce (run auth req)
+
+run' :: Request 'RO a -&gt; IO (Maybe a)
+run' req = executeRequest' req &gt;&gt;= processResponce (run' req)
+
+processResponce :: IO (Maybe a) -&gt; Either Error a -&gt; IO (Maybe a)
+processResponce retry = \case
+  Left (HTTPError (HttpExceptionRequest _ (StatusCodeException err _))) -&gt; do
+    let reset = pickRateLimitReset err
+    waits &lt;- truncate . diffUTCTime reset &lt;$&gt; getCurrentTime
+    putStrLn $ &quot;Caught API Limit, and wait &quot; ++ show waits ++ &quot;s&quot;
+    tz &lt;- getCurrentTimeZone
+    putStrLn $ &quot;Reset: &quot; ++ show (utcToLocalTime tz reset)
+    sleeps waits
+    sleeps 10 -- additional waiting to prevent too many connection queries
+    retry
+  Left err -&gt; do
+    putStrLn &quot;Uncaught API Error, error json: &quot;
+    print err
+    sleepms 500
+    return Nothing
+  Right res' -&gt; do
+    putStrLn &quot;API Response, OK&quot;
+    sleepms 500
+    return (Just res')
+
+getAuth :: String -&gt; IO (Maybe Auth)
+getAuth envName = do
+    token &lt;- lookupEnv envName
+    pure (OAuth . pack &lt;$&gt; token)
+</span></pre></body></html>
