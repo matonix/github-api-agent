@@ -7,13 +7,15 @@ module GitHub.Request.Agent
   , run
   , run'
   , getAuth
+  , getOAuth
+  , getBasicAuth
   ) where
 
 import Data.ByteString.Char8         (pack)
 import Data.Time.Clock               (diffUTCTime)
 import Data.Time.Clock.POSIX         (getCurrentTime)
 import Data.Time.LocalTime           (getCurrentTimeZone, utcToLocalTime)
-import GitHub                        (Auth (OAuth))
+import GitHub                        (Auth (..))
 import GitHub.Data.Definitions       (Error (HTTPError))
 import GitHub.Data.Request           (RW (RO), Request)
 import GitHub.Request                (executeRequest, executeRequest')
@@ -55,7 +57,21 @@ processResponce retry = \case
     sleepms 500
     return (Just res')
 
+-- | For backward compatibility
 getAuth :: String -> IO (Maybe Auth)
 getAuth envName = do
     token <- lookupEnv envName
     pure (OAuth . pack <$> token)
+
+getOAuth :: String -> IO (Maybe Auth)
+getOAuth envName = do
+    token <- lookupEnv envName
+    pure (OAuth . pack <$> token)
+
+getBasicAuth :: String -- User name environment variable
+  -> String -- Token name environment variable
+  -> IO (Maybe Auth)
+getBasicAuth uEnvName tEnvName = do
+    user <- fmap pack <$> lookupEnv uEnvName
+    token <- fmap pack <$> lookupEnv tEnvName
+    pure (BasicAuth <$> user <*> token)

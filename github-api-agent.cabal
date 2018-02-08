@@ -2,10 +2,10 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9ce4d436c05a68bd6eec919ebb61cb01359ba7db1d99fdeded6c40077f81a12f
+-- hash: 5d752c1f2bd74a767abd7e2faa0f54583537d7769ff2c28272663faeaf90c07e
 
 name:           github-api-agent
-version:        0.1.0.0
+version:        0.1.1.0
 category:       Web
 homepage:       https://github.com/matonix/github-api-agent#readme
 bug-reports:    https://github.com/matonix/github-api-agent/issues
